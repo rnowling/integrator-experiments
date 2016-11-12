@@ -8,3 +8,9 @@ def write_system(flname, integrator, trajectory):
                                "positions" : tuple(trajectory[1]),
                                "velocities" : tuple(trajectory[2]) } }
         json.dump(d, fl)
+
+def read_system(flname):
+    with open(flname) as fl:
+        d = json.load(fl)
+
+    return d
