@@ -6,8 +6,16 @@ import matplotlib
 matplotlib.use("PDF")
 import matplotlib.pyplot as plt
 
+from common import write_system
+from models import HarmonicOscillator
+from integrators import AnalyticalHarmonicOscillator
+
 def parseargs():
     parser = argparse.ArgumentParser()
+
+    parser.add_argument("--output-fl",
+                        required=True,
+                        type=str)
 
     parser.add_argument("--phase-fl",
                         required=True,
@@ -29,16 +37,15 @@ if __name__ == "__main__":
     x_0 = 1 # m
     v_0 = 0 # m / s
 
-    phi = np.arctan2( - v_0 / (omega * omega), x_0)
-    # If phi = k * pi / 2  where k is an integer not equal to 0, we will get a divide by 0
-    A = x_0 / (mass * np.cos(phi))
+    system = HarmonicOscillator(omega, mass)
+    integrator = AnalyticalHarmonicOscillator(delta_t, system)
 
-    print "phi", phi
-    print "A", A
+    xs, vs, ts = integrator.simulate(steps, x_0, v_0)
 
-    ts = np.arange(steps) * delta_t
-    xs = A * mass * np.cos(omega * ts + phi)
-    vs = - A * mass * omega * np.sin(omega * ts + phi)
+    write_system(args.output_fl,
+                 integrator,
+                 (ts, xs, vs))
+    
     ke = 0.5 * mass * vs * vs
     pe = 0.5 * mass * omega * omega * xs * xs
     total_energy = ke + pe

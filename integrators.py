@@ -1,3 +1,5 @@
+import numpy as np
+
 class VelocityVerlet(object):
     def __init__(self, timestep, system):
         self.timestep = timestep
@@ -14,4 +16,23 @@ class VelocityVerlet(object):
     def to_json(self):
         return { "integrator" : "velocity verlet",
                  "timestep" : self.timestep }
+
+class AnalyticalHarmonicOscillator(object):
+    def __init__(self, timestep, system):
+        self.timestep = timestep
+        self.system = system
+
+    def simulate(self, steps, x_0, v_0):
+        phi, A = self.system.solve_analytical(x_0, v_0)
+
+        ts = np.arange(steps) * self.timestep
+        xs = A * self.system.mass * np.cos(self.system.omega * ts + phi)
+        vs = - A * self.system.mass * self.system.omega * np.sin(self.system.omega * ts + phi)
+
+        return xs, vs, ts
+
+    def to_json(self):
+        return { "integrator" : "analytical harmonic oscillator",
+                 "timestep" : self.timestep }
+        
 
