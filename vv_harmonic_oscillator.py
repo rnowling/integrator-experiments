@@ -6,8 +6,16 @@ import matplotlib
 matplotlib.use("PDF")
 import matplotlib.pyplot as plt
 
+from common import write_system
+from models import HarmonicOscillator
+from integrators import VelocityVerlet
+
 def parseargs():
     parser = argparse.ArgumentParser()
+
+    parser.add_argument("--output-fl",
+                        required=True,
+                        type=str)
 
     parser.add_argument("--phase-fl",
                         required=True,
@@ -19,29 +27,6 @@ def parseargs():
 
     return parser.parse_args()
 
-class HarmonicOscillator(object):
-    def __init__(self, omega, mass):
-        self.omega = omega
-        self.mass = mass
-
-    def potential_energy(self, x):
-        return 0.5 * self.omega * self.omega * self.mass * x * x
-
-    def force(self, x):
-        return - self.omega * self.omega * self.mass * x
-
-class VelocityVerlet(object):
-    def __init__(self, timestep, system):
-        self.timestep = timestep
-        self.system = system
-
-    def step(self, x_0, v_0):
-        f_0 = self.system.force(x_0) / system.mass
-        x_1 = x_0 + v_0 * self.timestep + 0.5 * f_0 * self.timestep * self.timestep
-        f_1 = self.system.force(x_1) / system.mass
-        v_1 = v_0 + 0.5 * (f_0 + f_1) * self.timestep
-
-        return x_1, v_1, f_1
 
 if __name__ == "__main__":
     args = parseargs()
@@ -66,6 +51,10 @@ if __name__ == "__main__":
         xs.append(x_0)
         vs.append(v_0)
         ts.append(t_0)
+
+    write_system(args.output_fl,
+                 integrator,
+                 (ts, xs, vs))
 
     ts = np.array(ts)
     vs = np.array(vs)
