@@ -25,7 +25,7 @@ if __name__ == "__main__":
     steps = 1000
     delta_t = 0.01 # sec
     omega = 2 * np.pi # rad / sec
-    mass = 1 # kg
+    mass = 2 # kg
     x_0 = 1 # m
     v_0 = 0 # m / s
 
