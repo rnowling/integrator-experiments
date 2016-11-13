@@ -31,6 +31,13 @@ class AnalyticalHarmonicOscillator(object):
 
         return xs, vs, ts
 
+    def evaluate_at(self, t, x_0, v_0):
+        phi, A = self.system.solve_analytical(x_0, v_0)
+        x =  A * self.system.mass * np.cos(self.system.omega * t + phi)
+        v = - A * self.system.mass * self.system.omega * np.sin(self.system.omega * t + phi)
+
+        return x, v
+
     def to_json(self):
         return { "integrator" : "analytical harmonic oscillator",
                  "timestep" : self.timestep }
