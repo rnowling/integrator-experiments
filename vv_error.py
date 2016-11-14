@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     system = HarmonicOscillator(omega, mass)
     vv_integrator = VelocityVerlet(args.dt, system)
-    analytical_integrator = AnalyticalHarmonicOscillator(args.dt, system)
+    analytical_integrator = AnalyticalHarmonicOscillator(system, x_0, v_0)
 
     local_error_xs = []
     local_error_vs = []
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         t = args.dt * (i + 1)
         local_vv_x, local_vv_v, _ = vv_integrator.step(analytical_x, analytical_v)
         global_vv_x, global_vv_v, _ = vv_integrator.step(global_vv_x, global_vv_v)
-        analytical_x, analytical_v = analytical_integrator.evaluate_at(t, x_0, v_0)
+        analytical_x, analytical_v = analytical_integrator.evaluate_at(t)
         local_error_x = np.abs(analytical_x - local_vv_x)
         local_error_v = np.abs(analytical_v - local_vv_v)
         global_error_x = np.abs(analytical_x - global_vv_x)

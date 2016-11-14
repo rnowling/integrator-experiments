@@ -12,22 +12,38 @@ def parseargs():
     parser.add_argument("--output-fl",
                         type=str)
 
+    parser.add_argument("--steps",
+                        default=1000,
+                        type=int,
+                        help="Number of steps")
+
+    parser.add_argument("--dt",
+                        default=0.01,
+                        type=float,
+                        help="Time step")
+
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = parseargs()
     
-    steps = 1000
-    delta_t = 0.01 # sec
     omega = 2 * np.pi # rad / sec
     mass = 2 # kg
     x_0 = 1 # m
     v_0 = 0 # m / s
 
     system = HarmonicOscillator(omega, mass)
-    integrator = AnalyticalHarmonicOscillator(delta_t, system)
+    integrator = AnalyticalHarmonicOscillator(system, x_0, v_0)
 
-    xs, vs, ts = integrator.simulate(steps, x_0, v_0)
+    xs = []
+    vs = []
+    ts = []
+    for i in xrange(args.steps):
+        t = args.dt * i
+        x, v = integrator.evaluate_at(t)
+        xs.append(x)
+        vs.append(v)
+        ts.append(t)
 
     xs = np.array(xs)
     vs = np.array(vs)
