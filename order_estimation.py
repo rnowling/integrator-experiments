@@ -94,11 +94,12 @@ if __name__ == "__main__":
 
     plt.clf()
     plt.hold(True)
-    plt.plot(log_timesteps, log_max_global_pos_error, "c-")
-    plt.plot(log_timesteps, max_pos_error_slope * log_timesteps + max_pos_error_inter, "k-")
+    plt.plot(log_timesteps, log_max_global_pos_error, "c-", label="Actual")
+    plt.plot(log_timesteps, max_pos_error_slope * log_timesteps + max_pos_error_inter, "k-", label="Estimate")
     plt.xlabel("Time (log s)", fontsize=16)
     plt.ylabel("Max Error (log m)", fontsize=16)
     plt.title("Global Position Error", fontsize=18)
+    plt.legend(loc="lower right")
     plt.savefig("figures/global_position_error_dt_truncated.png", DPI=300)
 
     max_vel_error_slope, max_vel_error_inter, max_vel_error_r, _, _ = stats.linregress(log_timesteps[2:],
@@ -109,9 +110,10 @@ if __name__ == "__main__":
 
     plt.clf()
     plt.hold(True)
-    plt.plot(log_timesteps, log_max_global_pos_error, "c-")
-    plt.plot(log_timesteps, max_pos_error_slope * log_timesteps + max_pos_error_inter, "k-")
+    plt.plot(log_timesteps, log_max_global_pos_error, "c-", label="Actual")
+    plt.plot(log_timesteps, max_pos_error_slope * log_timesteps + max_pos_error_inter, "k-", label="Estimate")
     plt.xlabel("Time (log s)", fontsize=16)
     plt.ylabel("Max Error (log m/s)", fontsize=16)
     plt.title("Global Velocity Error", fontsize=18)
+    plt.legend(loc="lower right")
     plt.savefig("figures/global_velocity_error_dt_truncated.png", DPI=300)
