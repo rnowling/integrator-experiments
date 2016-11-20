@@ -6,6 +6,12 @@ from models import HarmonicOscillator
 from integrators import VelocityVerlet
 from integrators import AnalyticalHarmonicOscillator
 
+from scipy.stats import linregress
+
+import matplotlib
+matplotlib.use("PDF")
+import matplotlib.pyplot as plt
+
 def parseargs():
     parser = argparse.ArgumentParser()
 
@@ -72,7 +78,43 @@ if __name__ == "__main__":
     print "Average local velocity error:", np.mean(local_error_vs)
     print "Std local velocity error:", np.std(local_error_vs)
     print
-    print "Average global position error:", np.mean(global_error_xs)
-    print "Std global position error:", np.std(global_error_xs)
-    print "Average global velocity error:", np.mean(global_error_vs)
-    print "Std global velocity error:", np.std(global_error_vs)
+
+    max_cum_error_xs = []
+    max_cum_error_vs = []
+    max_error_xs = 0.0
+    max_error_vs = 0.0
+    for i in xrange(len(global_error_xs)):
+        max_error_xs = max(global_error_xs[i], max_error_xs)
+        max_error_vs = max(global_error_vs[i], max_error_vs)
+        max_cum_error_xs.append(max_error_xs)
+        max_cum_error_vs.append(max_error_vs)
+
+    # max_error = c * elapsed_time + b    
+    max_slope, max_intercept, max_r, _, _ = linregress(ts, max_cum_error_xs)
+    print "Max global position error:", max(max_cum_error_xs)
+    print "Max global position error slope:", max_slope
+    print "Max global position error r^2:", (max_r * max_r)
+    plt.clf()
+    plt.hold(True)
+    plt.plot(ts, global_error_xs, "c-")
+    plt.plot(ts, max_slope * ts + max_intercept, "k-")
+    plt.xlabel("Time (s)", fontsize=16)
+    plt.ylabel("Error (m)", fontsize=16)
+    plt.title("Global Position Error", fontsize=18)
+    plt.ylim([0, max(max(max_slope * ts + max_intercept), max(max_cum_error_xs))])
+    plt.savefig("figures/global_position_error.png", DPI=300)
+
+    
+    max_slope, max_intercept, max_r, _, _ = linregress(ts, max_cum_error_vs)
+    print "Max global velocity error:", max(max_cum_error_vs)
+    print "Max global velocity error slope:", max_slope
+    print "Max global velocity error r^2:", (max_r * max_r)
+    plt.clf()
+    plt.hold(True)
+    plt.plot(ts, global_error_vs, "c-")
+    plt.plot(ts, max_slope * ts + max_intercept, "k-")
+    plt.xlabel("Time (s)", fontsize=16)
+    plt.ylabel("Error (m/s)", fontsize=16)
+    plt.title("Global Velocity Error", fontsize=18)
+    plt.ylim([0, max(max(max_slope * ts + max_intercept), max(max_cum_error_vs))])
+    plt.savefig("figures/global_velocity_error.png", DPI=300)
