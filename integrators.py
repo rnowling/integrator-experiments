@@ -1,17 +1,28 @@
+import copy
+
 import numpy as np
 
+
 class VelocityVerlet(object):
-    def __init__(self, timestep, system):
+    def __init__(self, timestep, system, initial_state):
         self.timestep = timestep
         self.system = system
+        self.state = initial_state.copy()
 
-    def step(self, x_0, v_0):
-        f_0 = self.system.force(x_0) / self.system.mass
-        x_1 = x_0 + v_0 * self.timestep + 0.5 * f_0 * self.timestep * self.timestep
-        f_1 = self.system.force(x_1) / self.system.mass
-        v_1 = v_0 + 0.5 * (f_0 + f_1) * self.timestep
+    def step(self):
+        acc_0 = self.state.forces / self.system.mass
+        self.state.positions += self.state.velocities * self.timestep + \
+                                0.5 * acc_0 * self.timestep * self.timestep
+        self.system.update_energies(self.state)
+        
+        acc_1 = self.state.forces / self.system.mass
+        self.state.velocities += 0.5 * (acc_0 + acc_1) * self.timestep
+        self.state.momenta = self.system.mass * self.state.velocities
+        self.system.update_energies(self.state)
 
-        return x_1, v_1, f_1
+        self.state.simulated_time += self.timestep
+        
+        return self.state.copy()
 
     def to_json(self):
         return { "integrator" : "velocity verlet",
